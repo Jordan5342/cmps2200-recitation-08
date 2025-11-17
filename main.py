@@ -12,8 +12,26 @@ def shortest_shortest_path(graph, source):
       a dict where each key is a vertex and the value is a tuple of
       (shortest path weight, shortest path number of edges). See test case for example.
     """
-    ### TODO
-    pass
+    heap = [(0, 0, source)]
+    visited = {}  # Maps vertex to (weight, num_edges)
+    
+    while heap:
+      weight, num_edges, vertex = heappop(heap)
+        
+      # Skip if we've already found a better path to this vertex
+      if vertex in visited:
+        continue
+        
+      # Record this as the best path to this vertex
+      visited[vertex] = (weight, num_edges)
+        
+      # Explore neighbors
+      if vertex in graph:
+        for neighbor, edge_weight in graph[vertex]:
+          if neighbor not in visited:
+            heappush(heap, (weight + edge_weight, num_edges + 1, neighbor))
+    
+    return visited
     
 
     
@@ -24,8 +42,20 @@ def bfs_path(graph, source):
       a dict where each key is a vertex and the value is the parent of 
       that vertex in the shortest path tree.
     """
-    ###TODO
-    pass
+    parents = {source: None}
+    queue = deque([source])
+    
+    while queue:
+        vertex = queue.popleft()
+        
+        # Explore neighbors
+        if vertex in graph:
+            for neighbor in graph[vertex]:
+                if neighbor not in parents:
+                    parents[neighbor] = vertex
+                    queue.append(neighbor)
+    
+    return parents
 
 def get_sample_graph():
      return {'s': {'a', 'b'},
@@ -43,6 +73,13 @@ def get_path(parents, destination):
       The shortest path from the source node to this destination node 
       (excluding the destination node itself). See test_get_path for an example.
     """
-    ###TODO
-    pass
-
+    path = []
+    current = destination
+    
+    while current is not None:
+        path.append(current)
+        current = parents[current]
+    
+    path.pop(0)
+    path.reverse()
+    return ''.join(path)
